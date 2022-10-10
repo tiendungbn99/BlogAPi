@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: Blog-api
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: huyhu
+Implementation-Vendor-Id: com.ltw.blog
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://spring.io/projects/spring-boot/Blog-api
+Created-By: Maven Integration for Eclipse
+
