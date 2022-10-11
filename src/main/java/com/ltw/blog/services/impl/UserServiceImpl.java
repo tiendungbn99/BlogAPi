@@ -2,11 +2,14 @@ package com.ltw.blog.services.impl;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
@@ -14,6 +17,7 @@ import com.ltw.blog.entities.User;
 import com.ltw.blog.exceptions.ResourceNotFoundException;
 import com.ltw.blog.payload.UserDto;
 import com.ltw.blog.repositories.UserRepo;
+import com.ltw.blog.security.UserPrincipal;
 import com.ltw.blog.services.UserService;
 
 @Service
@@ -35,7 +39,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDto updateUser(UserDto userDto, Integer userId) {
 		User user=this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "Id", userId));
-		user.setName(userDto.getName());
+		user.setFullName(userDto.getFullName());
+		user.setUsername(userDto.getUsername());
 		user.setEmail(userDto.getEmail());
 		user.setPassword(userDto.getPassword());
 		user.setAbout(userDto.getAbout());
@@ -74,6 +79,20 @@ public class UserServiceImpl implements UserService {
 	public UserDto userToDto(User user) {
 		UserDto userDto = this.modelMapper.map(user, UserDto.class);
 		return userDto;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> userOptional = userRepo.findByUsername(username);
+        if (!userOptional.isPresent()) {
+            throw new UsernameNotFoundException(username);
+        }
+        return UserPrincipal.build(userOptional.get());
+	}
+
+	@Override
+	public Optional<User> findByUsername(String username) {
+		return userRepo.findByUsername(username);
 	}
 
 }
